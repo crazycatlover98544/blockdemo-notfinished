@@ -8,6 +8,7 @@ You will need the following dependencies (you will also likely have to create a 
 |python3|[https://www.python.org/](https://www.python.org/)|
 |ursina|[https://www.ursinaengine.org/](https://www.ursinaengine.org/)|
 |numpy|[https://numpy.org/](https://numpy.org/)|
+|Optional: python3-tkinter|[https://www.python.org/](https://www.python.org/)|
 
 ## Controls
 Use W,A,S,D as arrow keys (W=up, S=down, so on). To jump, press Space. To toggle the mouse being captured, press Escape. To respawn, press "r" or go below y=0.
