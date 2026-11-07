@@ -14,5 +14,8 @@ You will need the following dependencies (you will also likely have to create a 
 Use W,A,S,D as arrow keys (W=up, S=down, so on). To jump, press Space. To toggle the mouse being captured, press Escape. To respawn, press "r" or go below y=0.
 The mouse will be captured by default.
 
+## Bugs
+When you spawn, you will be encased in a dirt prison. Press "r" (respawn) to exit it.
+
 ## Screenshot
 ![Screenshot](screenshot.png)
