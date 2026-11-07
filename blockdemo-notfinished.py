@@ -17,6 +17,11 @@ Please note that this code is not written by an expert.
 I am not responsible if this harms your computer.
 
 THIS PROGRAM WILL LAG.
+
+11/7/2026@6:20 P.M. EST
+World height changed from 16 blocks to 20
+Added a space for people to build at without mining
+You can change the block you are holding with "1" or "2" (1: Dirt; 2: Grass)
 '''
 
 from ursina import *
@@ -36,7 +41,10 @@ app = Ursina(
     editor_ui_enabled=False
 )
 
+currently_held_block = 1
+
 coords = Text(text='', position=((-camera.aspect_ratio / 2) + 0.05, 0.47), scale=0.75)
+current_hold = Text(text=str(currently_held_block), position=((-camera.aspect_ratio / 2) + 0.05, -0.47), scale=0.75)
 sky = Sky(model='sky_dome')
 player_respawn = Vec3(7,15,7)
 
@@ -51,14 +59,17 @@ player.fall_after = 0.25
 player.air_time = 0.3
 player.speed = 6
 
-world = numpy.ones((16, 16, 16), dtype=int)
+world = numpy.ones((16, 16, 20), dtype=int)
 # np z is y; np y is z
 
 i = 0
-while i < 16:
+while i < 16: # Clear a space for building
     j = 0
     while j < 16:
-        world[i,j,13] = 1
+        k = 15
+        while k < 20:
+            world[i,j,k] = 0
+            k += 1
         j += 1
     i += 1
 
@@ -80,6 +91,11 @@ keys_down = {
 textures = {
     'dirt': 'textures/dirt.png',
     'grass': 'textures/grass.png'
+}
+
+blocks_list = { # used for rendering the currently selected block; it makes no sense to just see "1" and "2"
+    '1': 'bd-nf:dirt',
+    '2': 'bd-nf:grass'
 }
 
 def reload_world():
@@ -115,6 +131,7 @@ def update():
     if player.y < -5:
         player.position = player_respawn
     coords.position = Vec2((-camera.aspect_ratio / 2)+0.05, 0.47)
+    current_hold.text = f'Currently holding {blocks_list.get(str(currently_held_block),"notfound")}'
     try:
         coords.text = f'Pos: {formatted_coords(list(player.position))}  Pointed: {formatted_coords(list(mouse.hovered_entity.position + mouse.normal))}'
     except AttributeError:
@@ -131,12 +148,16 @@ def key_pressed(key,target):
         keys_down[target] = True
 
 def input(key):
-    global world
+    global world, currently_held_block
     print(key)
     if key == 'escape':
         mouse.locked = not mouse.locked
     if key == 'r':
         player.position = player_respawn
+    if key == '1':
+        currently_held_block = 1
+    elif key == '2': # use elif here as it will make sure the code does not glitch out and rapidly change between blocks if both "1" and "2" are pressed at the same time
+        currently_held_block = 2
     if key == 'left mouse down':
         if mouse.hovered_entity:
             if hasattr(mouse.hovered_entity, 'position'):
@@ -151,13 +172,12 @@ def input(key):
         if mouse.hovered_entity:
             if hasattr(mouse.hovered_entity, 'position'):
                 hepos = tuple(mouse.hovered_entity.position + mouse.normal)
-                print(hepos)
                 tx = hepos[0]
                 ty = hepos[1]
                 tz = hepos[2]
                     
                 try:
-                    world[int(tx),int(tz),int(ty)] = 1
+                    world[int(tx),int(tz),int(ty)] = currently_held_block
                     reload_world()
                 except IndexError:
                     pass
