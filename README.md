@@ -17,5 +17,8 @@ The mouse will be captured by default.
 ## Bugs
 When you spawn, you will be encased in a dirt prison. Press "r" (respawn) to exit it.
 
+## Changelog
+[Go to changelog](CHANGELOG.md)
+
 ## Screenshot
 ![Screenshot](screenshot.png)
