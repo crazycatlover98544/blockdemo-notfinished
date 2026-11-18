@@ -73,9 +73,21 @@ while i < 16: # Clear a space for building
         j += 1
     i += 1
 
-world[7,7,14] = 3
-world[7,8,14] = 2
-world[7,8,15] = 2
+i = 0
+while i < 16: # Add bedrock to bottom
+    j = 0
+    while j < 16:
+        world[i,j,0] = 3
+        j += 1
+    i += 1
+
+i = 0
+while i < 16: # Add grass to top
+    j = 0
+    while j < 16:
+        world[i,j,14] = 2
+        j += 1
+    i += 1
 
 cubes = []
 
@@ -90,12 +102,14 @@ keys_down = {
 
 textures = {
     'dirt': 'textures/dirt.png',
-    'grass': 'textures/grass.png'
+    'grass': 'textures/grass.png',
+    'bedrock': 'textures/bedrock.png'
 }
 
 blocks_list = { # used for rendering the currently selected block; it makes no sense to just see "1" and "2"
     '1': 'bd-nf:dirt',
-    '2': 'bd-nf:grass'
+    '2': 'bd-nf:grass',
+    '3': 'bd-nf:bedrock' # not used, just added it
 }
 
 def reload_world():
@@ -112,7 +126,7 @@ def reload_world():
             t = textures.get('grass','')
         elif value == 3:
             c = color.green
-            t = ''
+            t = textures.get('bedrock','')
         else:
             continue
         if (not (x == 0 or x == 15 or z == 0 or z == 15 or y == 0 or y == 15)) and ((not world[x+1,z,y] == 0) and (not world[x-1,z,y] == 0) and (not world[x,z+1,y] == 0) and (not world[x,z-1,y] == 0) and (not world[x,z,y+1] == 0) and (not world[x,z,y-1] == 0)):
@@ -131,6 +145,7 @@ def update():
     if player.y < -5:
         player.position = player_respawn
     coords.position = Vec2((-camera.aspect_ratio / 2)+0.05, 0.47)
+    
     current_hold.text = f'Currently holding {blocks_list.get(str(currently_held_block),"notfound")}'
     try:
         coords.text = f'Pos: {formatted_coords(list(player.position))}  Pointed: {formatted_coords(list(mouse.hovered_entity.position + mouse.normal))}'
@@ -165,9 +180,10 @@ def input(key):
                 tx = hepos[0]
                 ty = hepos[1]
                 tz = hepos[2]
-                world[int(tx),int(tz),int(ty)] = 0
                 print(world[int(tx),int(tz),int(ty)])
-                reload_world()
+                if not world[int(tx),int(tz),int(ty)] == 3: # Don't mine bedrock
+                    world[int(tx),int(tz),int(ty)] = 0
+                    reload_world()
     if key == 'right mouse down':
         if mouse.hovered_entity:
             if hasattr(mouse.hovered_entity, 'position'):
